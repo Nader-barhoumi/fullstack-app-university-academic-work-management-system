@@ -13,7 +13,7 @@ const { development } = require('./backend/knexfile');
 
 
 // Initialize Knex + Objection
-const knex = Knex(development);
+const knex = require('knex')(require('../knexfile')[env]);
 Model.knex(knex);
 
 // Redis Client

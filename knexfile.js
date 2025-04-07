@@ -6,10 +6,10 @@ module.exports = {
     connection: {
       host: process.env.DB_HOST || '127.0.0.1',
       user: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASSWORD || 'postgres',
+      // password: process.env.DB_PASSWORD || '8214',
       database: process.env.DB_NAME || 'fullstack_db',
     },
-    migrations: { directory: './migrations' },
+    migrations: { directory: './backend/migrations' },
     seeds: { directory: './seeds' },
   },
 };

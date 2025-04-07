@@ -12,3 +12,11 @@ backend/.env
 .idea/
 *.log
 node_modules
+
+# Database
+*.dump
+*.bak
+
+# Environment
+.env
+config/local.json
