@@ -11,10 +11,10 @@ This project is a comprehensive platform for the management of academic internsh
 - **Secure Authentication:** Role-based access control through Windows Server.
 
 ## **Technologies Used**
-- **Frontend:** Angular
-- **Backend:** Node.js, Express.js
-- **Database:** MySQL
-- **Server:** Windows Server
+- **Frontend:** Angular ,Tailwind CSS,
+- **Backend:** Node.js, Express.js ,Prisma ,
+- **Database:** Postgres SQL ,Redis 
+- **Server:** local Server ,Docker
 - **Design:** Figma
 - **Modeling:** UML
 
