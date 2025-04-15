@@ -1,26 +1,28 @@
 {
   "name": "your-backend",
   "version": "1.0.0",
-  "type": "commonjs",
   "scripts": {
-    "start": "node index.cjs",
-    "dev": "nodemon index.cjs",
-    "migrate": "knex migrate:latest",
-    "migrate:prod": "cross-env NODE_ENV=production knex migrate:latest"
+    "start": "ts-node src/index.ts",
+    "dev": "nodemon src/index.ts",
+    "typeorm": "ts-node ./node_modules/typeorm/cli"
   },
   "dependencies": {
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
-    "knex": "^3.1.0",
     "morgan": "^1.10.0",
-    "objection": "^3.1.5",
     "pg": "^8.14.1",
-    "redis": "^4.7.0"
+    "redis": "^4.7.0",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^0.3.22"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }

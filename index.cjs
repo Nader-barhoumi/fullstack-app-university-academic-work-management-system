@@ -6,15 +6,15 @@ const { createClient } = require('redis');
 const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
-const { Model } = require('objection');
-const Knex = require('knex');
+// const { Model } = require('objection');
+// const Knex = require('knex');
 const { development } = require('./backend/knexfile');
 
 
 
 // Initialize Knex + Objection
-const knex = require('knex')(require('../knexfile')[env]);
-Model.knex(knex);
+// const knex = require('knex')(require('../knexfile')[env]);
+// Model.knex(knex);
 
 // Redis Client
 const redisClient = createClient({ url: process.env.REDIS_URL });
