@@ -1,0 +1,22 @@
+# Frontend (Angular)
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Backend (Express)
+backend/node_modules/
+backend/.env
+
+# System
+.DS_Store
+.idea/
+*.log
+node_modules
+
+# Database
+*.dump
+*.bak
+
+# Environment
+.env
+config/local.json
