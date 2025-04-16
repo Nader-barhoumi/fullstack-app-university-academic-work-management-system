@@ -5,8 +5,8 @@ import { Company } from "./Companies";
 import { Signature } from "./Signatures";
 
 @Entity("invitations")
-@Check("receiver_email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'")
-@Check("phone ~ '^[0-9]{8,13}$'")
+// @Check("receiver_email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'")
+// @Check("phone ~ '^[0-9]{8,13}$'")
 export class Invitation {
   @PrimaryGeneratedColumn()
   id!: number;

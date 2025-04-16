@@ -2,10 +2,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, Check, CreateDateColumn } from "typeorm";
 import { User } from "./Users";
 import { Signature } from "./Signatures";
+import { Admin } from "./Admins";
 
 @Entity("signature_objects")
-@Check("external_email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'")
-@Check("signature_type IN ('manual', 'digital')")
+// @Check("external_email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'")
+// @Check("signature_type IN ('manual', 'digital')")
 export class SignatureObject {
   @PrimaryGeneratedColumn()
   id!: number;
@@ -47,7 +48,7 @@ export class SignatureObject {
   @JoinColumn({ name: "user_id" })
   user?: User;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => Admin)
   @JoinColumn({ name: "verified_by" })
   verifier?: User;
 
