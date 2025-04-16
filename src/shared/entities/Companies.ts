@@ -1,5 +1,6 @@
 import { Entity, PrimaryColumn, Column ,ManyToMany, ManyToOne , OneToMany , OneToOne} from "typeorm";
 import { Address } from "./Addresses";
+import { IndustrialTutor } from "./IndustrialTutors";
 @Entity()
 export class Company {
   @PrimaryColumn()
@@ -22,4 +23,7 @@ export class Company {
 
   @Column({ length: 50, nullable: true })
   website?: string;
+
+  @OneToMany(() => IndustrialTutor, (industrialTutor) => industrialTutor.company)  
+  industrialTutor?: IndustrialTutor[]; // Correct relation
 }

@@ -3,7 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, ManyToOne 
 import { Address } from "./Addresses";
 import { Student } from "./Students";
 import { Teacher } from "./Teachers";
-import { IndustrialTutors } from "./IndustrialTutors";
+import { IndustrialTutor } from "./IndustrialTutors";
 import { Admin } from "./Admins";
 import { RoleType } from "../enums/RoleType.enum"; // Assuming you have a types file for these enums
 import { SexType } from "../enums/SexType.enum"; // Assuming you have a types file for these enums
@@ -62,14 +62,14 @@ export class User {
   is_active!: boolean;
 
   @OneToOne(() => Student, student => student.user_id)
-  student: Students;
+  student: Student;
 
   @OneToOne(() => Teacher, teacher => teacher.user_id)
   teacher: Teacher;
 
-  @OneToOne(() => IndustrialTutors, industrialTutor => industrialTutor.user)
-  industrialTutor: IndustrialTutors;
+  @OneToOne(() => IndustrialTutor, industrialTutor => industrialTutor.user)
+  industrialTutor: IndustrialTutor;
 
-  @OneToOne(() => Admins, admin => admin.user)
-  admin: Admins;
+  @OneToOne(() => Admin, admin => admin.user)
+  admin: Admin;
 }

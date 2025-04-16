@@ -1,15 +1,16 @@
 // src/entity/AcademicInstitution.ts
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, OneToMany, Check } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany, Check } from "typeorm";
 import { Address } from "./Addresses";
 import { DegreeProgram } from "./DegreePrograms";
-import { Teacher } from "./Teacher";
-
-@Entity("academic_institutions")
-@Check("phone ~ '^[0-9]{10,15}$'")
-@Check("email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'")
+import { Teacher } from "./Teachers";
+import { Department } from "./Departments";
+import { Student } from "./Students";
+@Entity()
+// @Check("phone ~ '^[0-9]{10,15}$'")
+// @Check("email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'")
 export class AcademicInstitution {
-  @PrimaryColumn({ length: 20 })
-  id!: string;
+  @PrimaryGeneratedColumn()
+  id!: number;
 
   @Column({ length: 100 })
   name!: string;
@@ -23,22 +24,26 @@ export class AcademicInstitution {
   @Column({ length: 20, nullable: true })
   fax?: string;
 
-  @Column()
-  address_id!: number;
-
   @Column({ length: 255 })
   email!: string;
 
   @Column({ length: 100 })
   director!: string;
 
-  @ManyToOne(() => Address, address => address.address_details)
-  @JoinColumn({ name: "address" })
+  @OneToOne(() => Address)
+  @JoinColumn({ name: "Address" })
   address!: Address;
 
-  @OneToMany(() => DegreeProgram, degreeProgram => degreeProgram.name)
+  @OneToMany(() => DegreeProgram, (degreeProgram) => degreeProgram.institution) // Correct relation
   degreePrograms!: DegreeProgram[];
 
-  @OneToMany(() => Teacher, teacher => teacher.user_id)
+  @OneToMany(() => Teacher, (teacher) => teacher.institution)
   teachers!: Teacher[];
+
+  @OneToMany(() => Student, (student) => student.institution) // Correct relation
+  students!: Student[]; // Correct relation
+
+  @OneToMany(() => Department, (department) => department.institution)
+  departments!: Department[];
+
 }

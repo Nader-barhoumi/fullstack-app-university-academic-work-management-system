@@ -1,17 +1,26 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
-import {Degree_Program} from "./DegreePrograms";
+// src/entity/Speciality.ts
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
+import { DegreeProgram } from "./DegreePrograms";
+import { Student } from "./Students";
 
-@Entity()
-export class Specialities {
-    @PrimaryGeneratedColumn()    
-    id!: number;
-    
-    @Column({ length: 50, unique: true })
-    name!: string; //legal_name?: string;
+@Entity("specialities")
+export class Speciality {
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @Column({ type:'text', nullable: true })
-    description?: string;
+  @Column({ length: 50, unique: true })
+  name!: string;
 
-    @OneToOne(() => Degree_Program, degree_program => degree_program.name)
-    degree_program!: Degree_Program;
+  @Column({ length: 20, nullable: true })
+  degree_program_id?: string;
+
+  @Column({ type: "text", nullable: true })
+  description?: string;
+
+  @ManyToOne(() => DegreeProgram, degreeProgram => degreeProgram.specialities, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "degree_program_id" })
+  degreeProgram?: DegreeProgram;
+
+  @OneToMany(() => Student, student => student.speciality)
+  students!: Student[];
 }

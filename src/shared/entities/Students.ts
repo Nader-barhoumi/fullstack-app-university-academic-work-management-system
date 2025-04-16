@@ -1,13 +1,16 @@
 
 // src/entity/Students.ts
-import { Entity, PrimaryColumn, Column, OneToOne, JoinColumn, ManyToOne } from "typeorm";
+import { Entity, PrimaryColumn, Column, OneToOne, JoinColumn, ManyToOne, JoinTable, ManyToMany, OneToMany } from "typeorm";
 import { User } from "./Users";
 import { DegreeProgram } from "./DegreePrograms";
 import { Department } from "./Departments"
 import { Major } from "./Majors";
-import { Specialities } from "./Specialities";
+import { Speciality } from "./Specialities";
 import { LevelType } from "../enums/LevelType.enum"; // Assuming you have a types file for these enums
-
+import { AcademicInstitution } from "./AcademicInstitution"; // Assuming you have this entity
+import { Internship } from "./Internships"; // Assuming you have this entity
+import { join } from "path";
+import { AcademicWork } from "./AcademicWorks";
 
 @Entity()
 export class Student {
@@ -19,18 +22,33 @@ export class Student {
   @Column({ length: 50, unique: true })
   student_id!: string; 
 
-  @ManyToOne(() => Department, department => department.name)  
+  @ManyToOne(() => AcademicInstitution, institution => institution.students)
+  @JoinColumn({ name: "institution_id" }) // Correct relation
+  institution!: AcademicInstitution;
+
+  @ManyToOne(() => Department, department => department.students)
+  @JoinColumn({ name: "department",referencedColumnName:"name" }) // Correct relation  
   department!: Department;
 
   @Column({ type: "enum", enum: LevelType })
   level!: LevelType;
 
-  @ManyToOne(() => DegreeProgram, degreeProgram => degreeProgram.name)
-  degreeProgram!: DegreeProgram;
+  @ManyToMany(() => DegreeProgram, degreeProgram => degreeProgram.students)
+  @JoinTable() // Only needed on one side (owning side)
+  degreePrograms!: DegreeProgram[]; // Note plural name and array type
 
   @ManyToOne(() => Major, major => major.name)
+  @JoinColumn({ name: "major" }) // Correct relation
   major!: Major;
 
-  @ManyToOne(() => Specialities, speciality => speciality.name)
-  speciality!: Specialities;
+  @ManyToOne(() => Speciality, speciality => speciality.students)
+  @JoinColumn({ name: "speciality" }) // Correct relation
+  speciality!: Speciality;
+
+  @OneToMany(() => Internship, internship => internship.student)
+  internships?: Internship[];
+
+  @OneToMany(() => AcademicWork, academicWork => academicWork.student)
+  academicworks?: AcademicWork[];
+
 }

@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, OneToOne } from "typeorm";
 import { Department } from "./Departments";
-import { Degree_Program } from "./DegreePrograms";
+import { DegreeProgram } from "./DegreePrograms";
 
 @Entity()
 export class Major {
@@ -16,6 +16,6 @@ export class Major {
     @ManyToOne(() => Department, department => department.name)
     department!: Department;
 
-    @OneToOne(() => Degree_Program, degree_program => degree_program.name)
-    degree_program!: Degree_Program;
+    @OneToOne(() => DegreeProgram, degree_program => degree_program.name)
+    degree!: DegreeProgram;
 }

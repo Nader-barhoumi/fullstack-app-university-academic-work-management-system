@@ -1,5 +1,5 @@
 // src/entity/enums/ProgressStatus.enum.ts
-export enum Progress_Status {
+export enum ProgressStatus {
     ON_GOING = 'on_going',
     FINISHED = 'finished'
   }
