@@ -19,4 +19,6 @@ node_modules
 
 # Environment
 .env
+.env.local
+.env.*.local
 config/local.json
