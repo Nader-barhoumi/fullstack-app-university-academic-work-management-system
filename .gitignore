@@ -1,0 +1,13 @@
+# Frontend (Angular)
+Frontend/node_modules/
+Frontend/dist/
+Frontend/.angular/
+
+# Backend (Express)
+Backend/node_modules/
+Backend/.env
+
+# System
+.DS_Store
+.idea/
+*.log
