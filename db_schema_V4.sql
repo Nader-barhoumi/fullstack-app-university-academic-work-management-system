@@ -19,6 +19,7 @@ CREATE TYPE work_type AS ENUM ('summer internship', 'final year project', 'memoi
 CREATE TYPE defense_decision AS ENUM ('passed', 'failed', 'delayed');
 CREATE TYPE work_status AS ENUM ('active', 'complete', 'archived');
 CREATE TYPE signature_type AS ENUM ('digital', 'manual', 'biometric');
+CREATE TYPE States AS ENUM ('Tunis','Ariana','Manouba','Ben Arous',' Nabeul','Zaghouan','Béja','Jendouba','Kasserine','Kef','Siliana','Sousse','Monastir','Mahdia','Sfax','Kairouan','Sidi Bouzid','Gafsa','Tozeur','Kébili','Medenine','Tataouine','Gabès')
 
 -- Phase 1: Create all tables without foreign key references
 -- Base tables (no foreign keys)
