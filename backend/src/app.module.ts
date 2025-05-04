@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { config } from 'dotenv';
 import { AddressesModule } from './addresses/addresses.module';
+import { AcademicInstitutionModule } from './academic-institution/academic-institution.module';
 
 
 config();
@@ -29,6 +30,8 @@ config();
     }),
     
     AddressesModule,
+    
+    AcademicInstitutionModule,
    
   ],
   

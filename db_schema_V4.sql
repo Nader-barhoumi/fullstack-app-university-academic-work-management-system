@@ -79,11 +79,11 @@ CREATE TABLE companies (
 );
 
 CREATE TABLE academic_institutions (
-    id VARCHAR(20) PRIMARY KEY,
+    id INT PRIMARY KEY DEFAULT 1,
     name VARCHAR(100) NOT NULL,
     university VARCHAR(100) NOT NULL,
-    phone VARCHAR(20) NOT NULL,
-    fax VARCHAR(20),
+    phone INT NOT NULL,
+    fax INT,
     address_id INT NOT NULL,
     email VARCHAR(255) NOT NULL,
     director VARCHAR(100) NOT NULL
