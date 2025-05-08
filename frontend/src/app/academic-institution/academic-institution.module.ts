@@ -1,15 +1,20 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AcademicInstitutionComponent } from './academic-institution.component';
+import { AddressCardComponent } from '../addresses/address-card/address-card.component';
+import { AddressFormComponent } from '../addresses/address-form/address-form.component';
 
 @NgModule({
   declarations: [
-    AcademicInstitutionComponent
+    AcademicInstitutionComponent,
+    AddressCardComponent
   ],
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule,
+    AddressFormComponent
   ],
   exports: [
     AcademicInstitutionComponent

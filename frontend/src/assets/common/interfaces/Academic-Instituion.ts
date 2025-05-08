@@ -2,8 +2,8 @@ export interface AcademicInstitution {
   id: number;
   name: string;
   university: string;
-  phone: string;
-  fax?: string;
+  phone: number;
+  fax?: number;
   address_id: number;
   address: {
     id: number;

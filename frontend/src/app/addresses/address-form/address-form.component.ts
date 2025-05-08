@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,6 +14,24 @@ import { States } from '../../../assets/common/enums/States.enums';
   imports: [CommonModule, ReactiveFormsModule]
 })
 export class AddressFormComponent implements OnInit {
+  @Input() set address(value: Address | undefined) {
+    if (value) {
+      this._address = {
+        ...value,
+        state: typeof value.state === 'string' ? value.state as States : value.state
+      };
+    } else {
+      this._address = undefined;
+    }
+  }
+  get address(): Address | undefined {
+    return this._address;
+  }
+  private _address?: Address;
+
+  @Output() addressUpdated = new EventEmitter<Address>();
+  @Output() cancel = new EventEmitter<void>();
+
   addressForm!: FormGroup;
   addressId?: number;
   isEditMode = false;
@@ -31,12 +49,23 @@ export class AddressFormComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
 
-    // Check if we're in edit mode by looking for an ID in the route
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.addressId = +id;
+    if (this.address) {
       this.isEditMode = true;
-      this.loadAddress(this.addressId);
+      this.addressId = this.address.id;
+      this.addressForm.patchValue({
+        address_details: this.address.address_details || '',
+        zip_code: this.address.zip_code || null,
+        city: this.address.city || '',
+        state: this.address.state ? (this.address.state as States) : States.KASSERINE,
+        additional_details: this.address.additional_details || ''
+      });
+    } else {
+      const id = this.route.snapshot.paramMap.get('id');
+      if (id) {
+        this.addressId = +id;
+        this.isEditMode = true;
+        this.loadAddress(this.addressId);
+      }
     }
   }
 
@@ -45,7 +74,7 @@ export class AddressFormComponent implements OnInit {
       address_details: ['', [Validators.required]],
       zip_code: [null, [Validators.required, Validators.pattern(/^\d{4}$/)]],
       city: [''],
-      state: [null, [Validators.required]],
+      state: [States.KASSERINE, [Validators.required]],
       additional_details: ['']
     });
   }
@@ -74,18 +103,26 @@ export class AddressFormComponent implements OnInit {
       return;
     }
 
-    const addressData = this.addressForm.value as Partial<Address>;
-
-    // Convert zip_code from string to number to match backend expectations
-    if (addressData.zip_code) {
-      addressData.zip_code = +addressData.zip_code;
-    }
+    const formValue = this.addressForm.value;
+    const addressData: Partial<Address> = {
+      address_details: formValue.address_details,
+      zip_code: formValue.zip_code ? +formValue.zip_code : undefined,
+      city: formValue.city,
+      state: formValue.state,
+      additional_details: formValue.additional_details
+    };
 
     if (this.isEditMode && this.addressId) {
       // Update existing address
       this.addressService.updateAddress(this.addressId, addressData).subscribe({
-        next: () => {
-          this.router.navigate(['/addresses']);
+        next: (updatedAddress) => {
+          if (this.address) {
+            // If used as a component, emit the updated address
+            this.addressUpdated.emit(updatedAddress);
+          } else {
+            // If used standalone, navigate back
+            this.router.navigate(['/addresses']);
+          }
         },
         error: (error) => {
           this.errorMessage = `Failed to update address: ${error.message}`;
@@ -95,8 +132,14 @@ export class AddressFormComponent implements OnInit {
     } else {
       // Create new address
       this.addressService.createAddress(addressData).subscribe({
-        next: () => {
-          this.router.navigate(['/addresses']);
+        next: (newAddress) => {
+          if (this.address) {
+            // If used as a component, emit the new address
+            this.addressUpdated.emit(newAddress);
+          } else {
+            // If used standalone, navigate back
+            this.router.navigate(['/addresses']);
+          }
         },
         error: (error) => {
           this.errorMessage = `Failed to create address: ${error.message}`;
@@ -107,6 +150,12 @@ export class AddressFormComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/addresses']);
+    if (this.address) {
+      // If used as a component, emit cancel event
+      this.cancel.emit();
+    } else {
+      // If used standalone, navigate back
+      this.router.navigate(['/addresses']);
+    }
   }
 }

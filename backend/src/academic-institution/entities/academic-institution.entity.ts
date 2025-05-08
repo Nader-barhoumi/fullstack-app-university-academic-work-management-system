@@ -6,7 +6,7 @@ import { Addresses } from "../../addresses/entities/address.entity";
 // import { Department } from "./Departments";
 // import { Student } from "./Students";
 @Entity('academic_institution')
-@Check("id = 1")
+// @Check("id = 1")
 // @Check("phone ~ '^[0-9]{10,15}$'")
 // @Check("email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'")
 export class AcademicInstitution {
@@ -35,7 +35,7 @@ export class AcademicInstitution {
   logo_url?: string;
 
   @OneToOne(() => Addresses, { nullable: true })
-  @JoinColumn({ name: "Address" })
+  @JoinColumn({ name: "address_id" })
   address!: Addresses | null;
 
   // @OneToMany(() => DegreeProgram, (degreeProgram) => degreeProgram.institution) // Correct relation

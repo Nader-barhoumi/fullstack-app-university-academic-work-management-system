@@ -84,9 +84,10 @@ CREATE TABLE academic_institutions (
     university VARCHAR(100) NOT NULL,
     phone INT NOT NULL,
     fax INT,
-    address_id INT NOT NULL,
+    address_id INT NULL,
     email VARCHAR(255) NOT NULL,
-    director VARCHAR(100) NOT NULL
+    director VARCHAR(100) NOT NULL,
+    logo_url VARCHAR(255) DEFAULT 'no image'
 );
 
 CREATE TABLE degree_program (

@@ -1,6 +1,5 @@
 // src/academic-institution/dto/create-academic-institution.dto.ts
 import { IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, IsNumber, Length, IsInt, IsPositive } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class CreateAcademicInstitutionDto {
   @IsString()
@@ -30,6 +29,7 @@ export class CreateAcademicInstitutionDto {
   director!: string;
 
   @IsInt()
+  @IsOptional()
   addressId!: number; // Assuming you're linking by address ID
 
   @IsString()

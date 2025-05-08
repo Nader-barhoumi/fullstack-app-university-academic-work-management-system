@@ -1,21 +1,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AcademicInstitution } from '../../assets/common/interfaces/Academic-Instituion';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AcademicInstitutionService {
-  private apiUrl = 'http://localhost:3000/academic-institution';
+  private apiUrl = 'http://localhost:3000/academic-institutions';
 
   constructor(private http: HttpClient) {}
 
-  getInstitution(): Observable<AcademicInstitution> {
-    return this.http.get<AcademicInstitution>(this.apiUrl);
+  getInstitution(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
-  updateInstitution(institution: Partial<AcademicInstitution>): Observable<AcademicInstitution> {
-    return this.http.put<AcademicInstitution>(this.apiUrl, institution);
+  updateInstitution(id: number, data: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, data);
   }
 }

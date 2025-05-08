@@ -13,8 +13,8 @@ export class Addresses {
   @Column()
   zip_code!: number;
 
-  @Column({ length: 20 })
-  city!: string; // Changed from optional to required to match migration
+  @Column({ length: 20, nullable: true })
+  city?: string;
 
   @Column({type:'enum',enum: States})
   state!: States;

@@ -1,53 +1,53 @@
-<div class="container mx-auto p-4 max-w-2xl">
+<div class="app-container max-w-2xl">
   <div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-800">{{ isEditMode ? 'Edit' : 'Create' }} Address</h1>
+    <h1 class="page-title">{{ isEditMode ? 'Edit' : 'Create' }} Address</h1>
   </div>
 
-  <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+  <div *ngIf="errorMessage" class="error-container">
     {{ errorMessage }}
   </div>
 
-  <form [formGroup]="addressForm" (ngSubmit)="onSubmit()" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2" for="address_details">
+  <form [formGroup]="addressForm" (ngSubmit)="onSubmit()" class="form-container">
+    <div class="form-field">
+      <label class="field-label-bold" for="address_details">
         Address Details*
       </label>
       <input
-        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        class="input-field"
         id="address_details"
         type="text"
         formControlName="address_details"
         placeholder="Enter address details"
       >
       <div *ngIf="addressForm.get('address_details')?.invalid && addressForm.get('address_details')?.touched"
-           class="text-red-500 text-xs italic mt-1">
+           class="field-error">
         Address details are required
       </div>
     </div>
 
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2" for="zip_code">
+    <div class="form-field">
+      <label class="field-label-bold" for="zip_code">
         Zip Code*
       </label>
       <input
-        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        class="input-field"
         id="zip_code"
         type="number"
         formControlName="zip_code"
         placeholder="Enter 4-digit zip code"
       >
       <div *ngIf="addressForm.get('zip_code')?.invalid && addressForm.get('zip_code')?.touched"
-           class="text-red-500 text-xs italic mt-1">
+           class="field-error">
         A valid 4-digit zip code is required
       </div>
     </div>
 
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2" for="city">
+    <div class="form-field">
+      <label class="field-label-bold" for="city">
         City
       </label>
       <input
-        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        class="input-field"
         id="city"
         type="text"
         formControlName="city"
@@ -55,12 +55,12 @@
       >
     </div>
 
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2" for="state">
+    <div class="form-field">
+      <label class="field-label-bold" for="state">
         State*
       </label>
       <select
-        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        class="select-field"
         id="state"
         formControlName="state"
       >
@@ -68,17 +68,17 @@
         <option *ngFor="let state of states" [ngValue]="state">{{ state }}</option>
       </select>
       <div *ngIf="addressForm.get('state')?.invalid && addressForm.get('state')?.touched"
-           class="text-red-500 text-xs italic mt-1">
+           class="field-error">
         State is required
       </div>
     </div>
 
     <div class="mb-6">
-      <label class="block text-gray-700 text-sm font-bold mb-2" for="additional_details">
+      <label class="field-label-bold" for="additional_details">
         Additional Details
       </label>
       <textarea
-        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        class="textarea-field"
         id="additional_details"
         formControlName="additional_details"
         placeholder="Enter any additional details"
@@ -86,16 +86,16 @@
       ></textarea>
     </div>
 
-    <div class="flex items-center justify-between">
+    <div class="btn-group">
       <button
-        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        class="btn-primary"
         type="submit"
         [disabled]="addressForm.invalid"
       >
         {{ isEditMode ? 'Update' : 'Create' }} Address
       </button>
       <button
-        class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        class="btn-secondary"
         type="button"
         (click)="onCancel()"
       >
@@ -104,7 +104,7 @@
     </div>
   </form>
 
-  <div class="text-sm text-gray-600">
+  <div class="help-text">
     <p>* Required fields</p>
   </div>
 </div>

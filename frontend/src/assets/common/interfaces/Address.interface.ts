@@ -5,6 +5,6 @@ export interface Address {
   address_details: string;
   zip_code?: number;
   city?: string;
-  state?: States;
+  state?: States | string;
   additional_details?: string;
 }
