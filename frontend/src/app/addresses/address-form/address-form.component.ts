@@ -5,13 +5,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AddressService } from '../address.service';
 import { Address } from '../../../assets/common/interfaces/Address.interface';
 import { States } from '../../../assets/common/enums/States.enums';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-address-form',
   templateUrl: './address-form.component.html',
   styleUrls: ['./address-form.component.css'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule]
+  imports: [CommonModule, ReactiveFormsModule, FormsModule]
 })
 export class AddressFormComponent implements OnInit {
   @Input() set address(value: Address | undefined) {
@@ -159,3 +160,13 @@ export class AddressFormComponent implements OnInit {
     }
   }
 }
+
+// Example in app-routing.module.ts or another routing file
+import { Routes } from '@angular/router';
+
+export const routes: Routes = [
+  {
+    path: 'addresses',
+    component: AddressFormComponent
+  }
+];

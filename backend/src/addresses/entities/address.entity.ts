@@ -1,4 +1,4 @@
-// src/entity/Addresses.ts
+// src/addresses/entities/Addresses.ts
 import { States } from "../../enums/States.enums";
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 

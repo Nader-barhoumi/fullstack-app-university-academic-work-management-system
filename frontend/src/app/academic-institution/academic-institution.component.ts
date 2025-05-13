@@ -1,16 +1,27 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AcademicInstitutionService } from './academic-institution.service';
 import { AcademicInstitution } from '../../assets/common/interfaces/Academic-Instituion';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormsModule } from '@angular/forms';
 import { Address } from '../../assets/common/interfaces/Address.interface';
 import { States } from '../../assets/common/enums/States.enums';
 import { AddressService } from '../addresses/address.service';
+import { CommonModule } from '@angular/common';
+import { AddressCardComponent } from '../addresses/address-card/address-card.component';
+import { AddressFormComponent } from '../addresses/address-form/address-form.component';
+import { Routes } from '@angular/router';
 
 @Component({
   selector: 'app-academic-institution',
-  templateUrl:'./academic-institution.component.html',
+  templateUrl: './academic-institution.component.html',
   styleUrls: ['./academic-institution.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    AddressCardComponent,
+    AddressFormComponent
+  ]
 })
 export class AcademicInstitutionComponent implements OnInit {
   institution: AcademicInstitution | null = null;
@@ -94,6 +105,7 @@ export class AcademicInstitutionComponent implements OnInit {
   }
 
   onAddressUpdated(updatedAddress: Address) {
+    // Ensure you're correctly receiving an Address object, not an Event
     if (this.editInstitution) {
       // First update the address in the database
       if (updatedAddress.id) {
@@ -173,3 +185,11 @@ export class AcademicInstitutionComponent implements OnInit {
     }
   }
 }
+
+// If you have routes configured, make sure they reference the correct component name
+const routes: Routes = [
+  {
+    path: 'academic-institution',
+    component: AcademicInstitutionComponent  // NOT AcademicInstitutionComponent2
+  }
+];

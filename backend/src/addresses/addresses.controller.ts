@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, BadRequestException, Patch } from '@nestjs/common';
 import { AddressesService } from './addresses.service';
 import { CreateAddressDto} from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
@@ -30,8 +30,8 @@ export class AddressesController {
   }
 
   @Get()
-  findAll(): Promise<Addresses[]> {
-    return this.addressService.findAll();
+  async findAll(): Promise<Addresses[]> {
+    return await this.addressService.findAll();
   }
 
   @Get(':id')
@@ -54,6 +54,16 @@ export class AddressesController {
     } catch (error) {
       throw new BadRequestException(error.message || 'Invalid address data');
     }
+  }
+
+  @Patch(':id')
+  async partialUpdate(@Param('id') id: string, @Body() updateAddressDto: UpdateAddressDto): Promise<Addresses> {
+    const address = await this.addressService.findOne(+id);
+    if (!address) {
+      throw new BadRequestException(`Address with ID ${id} not found`);
+    }
+    Object.assign(address, updateAddressDto);
+    return await this.addressService.update(+id, address);
   }
 
   @Delete(':id')

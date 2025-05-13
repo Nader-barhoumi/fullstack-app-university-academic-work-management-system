@@ -4,6 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { config } from 'dotenv';
 import { AddressesModule } from './addresses/addresses.module';
 import { AcademicInstitutionModule } from './academic-institution/academic-institution.module';
+import { DegreeProgramModule } from './degree-programs/degree-programs.module';
+import { MajorsModule } from './majors/majors.module';
+import { SpecialitiesModule } from './specialities/specialities.module';
+import { DepartmentsModule } from './departments/departments.module';
 
 
 config();
@@ -32,8 +36,17 @@ config();
     AddressesModule,
     
     AcademicInstitutionModule,
+    
+    DegreeProgramModule,
+    
+    MajorsModule,
+    
+    SpecialitiesModule,
+    
+    DepartmentsModule,
    
   ],
+
   
 })
 export class AppModule {}

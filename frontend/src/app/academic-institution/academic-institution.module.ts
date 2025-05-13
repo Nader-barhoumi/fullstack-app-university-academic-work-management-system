@@ -7,14 +7,13 @@ import { AddressFormComponent } from '../addresses/address-form/address-form.com
 
 @NgModule({
   declarations: [
-    AcademicInstitutionComponent,
-    AddressCardComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    AddressFormComponent
+    AddressFormComponent,
+    AcademicInstitutionComponent
   ],
   exports: [
     AcademicInstitutionComponent

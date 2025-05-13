@@ -1,7 +1,7 @@
 // src/entity/AcademicInstitution.ts
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany, Check} from "typeorm";
 import { Addresses } from "../../addresses/entities/address.entity";
-// import { DegreeProgram } from "./DegreePrograms";
+import { DegreeProgram } from "../../degree-programs/entities/degree-program.entity";
 // import { Teacher } from "./Teachers";
 // import { Department } from "./Departments";
 // import { Student } from "./Students";
@@ -38,8 +38,8 @@ export class AcademicInstitution {
   @JoinColumn({ name: "address_id" })
   address!: Addresses | null;
 
-  // @OneToMany(() => DegreeProgram, (degreeProgram) => degreeProgram.institution) // Correct relation
-  // degreePrograms!: DegreeProgram[];
+  @OneToMany(() => DegreeProgram, (degreeProgram) => degreeProgram.institution) // Correct relation
+  degreePrograms: DegreeProgram[];
 
   // @OneToMany(() => Teacher, (teacher) => teacher.institution)
   // teachers!: Teacher[];

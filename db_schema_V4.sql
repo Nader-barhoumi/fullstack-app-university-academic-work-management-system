@@ -1,4 +1,7 @@
+-- postgres sql script to create the database schema for the internship management system
+
 -- Enable required extensions
+
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
@@ -19,22 +22,23 @@ CREATE TYPE work_type AS ENUM ('summer internship', 'final year project', 'memoi
 CREATE TYPE defense_decision AS ENUM ('passed', 'failed', 'delayed');
 CREATE TYPE work_status AS ENUM ('active', 'complete', 'archived');
 CREATE TYPE signature_type AS ENUM ('digital', 'manual', 'biometric');
-CREATE TYPE States AS ENUM ('Tunis','Ariana','Manouba','Ben Arous',' Nabeul','Zaghouan','Béja','Jendouba','Kasserine','Kef','Siliana','Sousse','Monastir','Mahdia','Sfax','Kairouan','Sidi Bouzid','Gafsa','Tozeur','Kébili','Medenine','Tataouine','Gabès')
-
+CREATE TYPE States AS ENUM ('Tunis','Ariana','Manouba','Ben Arous',' Nabeul','Zaghouan','Béja','Jendouba','Kasserine','Kef','Siliana','Sousse','Monastir','Mahdia','Sfax','Kairouan','Sidi Bouzid','Gafsa','Tozeur','Kébili','Medenine','Tataouine','Gabès');
+CREATE TYPE degree_program_type AS ENUM ('Bachelor','Master','PhD');
 -- Phase 1: Create all tables without foreign key references
+
 -- Base tables (no foreign keys)
-CREATE TABLE states (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(30) NOT NULL,
-    code VARCHAR(2) NOT NULL UNIQUE
-);
+-- CREATE TABLE states (
+--     id SERIAL PRIMARY KEY,
+--     name VARCHAR(30) NOT NULL,
+--     code VARCHAR(2) NOT NULL UNIQUE
+-- );
 
 CREATE TABLE address (
     id SERIAL PRIMARY KEY,
     address_details VARCHAR(255) NOT NULL,
     zip_code INTEGER NOT NULL,
     city VARCHAR(20) NOT NULL,
-    state_name VARCHAR(30) NOT NULL,
+    state States NOT NULL,
     additional_details VARCHAR(255)
 );
 
@@ -47,7 +51,7 @@ CREATE TABLE departments (
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     external_id UUID UNIQUE DEFAULT uuid_generate_v4(),
-    profile_picture VARCHAR(255) NOT NULL DEFAULT 'no image',
+    profile_picture VARCHAR(255) NOT NULL DEFAULT 'assets/images/default-avatar.png',
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     cin VARCHAR(8) NOT NULL,
@@ -71,15 +75,13 @@ CREATE TABLE companies (
     field VARCHAR(50),
     address_id INT,
     email VARCHAR(255),
-    phone VARCHAR(20) NOT NULL,
+    phone VARCHAR(20) NULL,
     website VARCHAR(255),
-    founded_year INT,
-    active_internships INT DEFAULT 0,
     is_active BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE academic_institutions (
-    id INT PRIMARY KEY DEFAULT 1,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     university VARCHAR(100) NOT NULL,
     phone INT NOT NULL,
@@ -87,28 +89,34 @@ CREATE TABLE academic_institutions (
     address_id INT NULL,
     email VARCHAR(255) NOT NULL,
     director VARCHAR(100) NOT NULL,
-    logo_url VARCHAR(255) DEFAULT 'no image'
+    logo_url VARCHAR(255) DEFAULT 'assets/images/default-logo.png'
 );
 
 CREATE TABLE degree_program (
     id VARCHAR(20) PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE,
-    duration_years INT NOT NULL,
+    code VARCHAR(10) NULL UNIQUE,
+    name VARCHAR(50) NULL UNIQUE,
+    degree degree_program_type NOT NULL,
+    major VARCHAR(50) NOT NULL,
+    speciality VARCHAR(50) NOT NULL,
+    duration_years INT NULL,
     description TEXT,
-    institution_id VARCHAR(20)
+    institution VARCHAR(20)
 );
 
 CREATE TABLE majors (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
-    description TEXT,
-    degree_program_id VARCHAR(20)
+    department VARCHAR(20) NOT NULL,
+    description TEXT
+    
 );
 
 CREATE TABLE specialities (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
-    degree_program_id VARCHAR(20),
+    code VARCHAR(10) NOT NULL UNIQUE,
+    major VARCHAR(50) NOT NULL,
     description TEXT
 );
 
@@ -144,10 +152,7 @@ CREATE TABLE students (
     user_id INT PRIMARY KEY,
     sex sex_type,
     student_id VARCHAR(10) NOT NULL,
-    department NOT NULL,
     degree VARCHAR(20) NOT NULL,
-    major VARCHAR(50) NOT NULL,
-    specialization VARCHAR(50) NOT NULL,
     level lvl_type NOT NULL
 );
 
@@ -155,14 +160,14 @@ CREATE TABLE teacher (
     user_id INT PRIMARY KEY,
     title VARCHAR(50),
     position position_type,
-    department NOT NULL,
+    department VARCHAR(50) NULL,
     office_location VARCHAR(50),
     institution_id VARCHAR(20)
 );
 
 CREATE TABLE industrial_tutors (
     user_id INT PRIMARY KEY,
-    company_id INT NOT NULL,
+    company_id INT NULL,
     job_title VARCHAR(50) NOT NULL
 );
 
@@ -177,7 +182,7 @@ CREATE TABLE academic_work (
     id SERIAL PRIMARY KEY,
     student_id INT NOT NULL,
     is_work_required BOOLEAN NOT NULL,
-    work_type work_type NOT NULL,
+    type work_type NOT NULL,
     internship_required BOOLEAN NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     max_collaborators INT DEFAULT 1,
@@ -426,8 +431,8 @@ CREATE TABLE otp_verifications (
 -- Phase 2: Add all constraints and foreign key references
 
 -- Address table constraints
-ALTER TABLE address
-    ADD CONSTRAINT fk_address_state FOREIGN KEY (state_name) REFERENCES states(name);
+-- ALTER TABLE address
+--     ADD CONSTRAINT fk_address_state FOREIGN KEY (state_name) REFERENCES states(name);
 
 -- Users table constraints
 ALTER TABLE users
@@ -452,15 +457,18 @@ ALTER TABLE academic_institutions
 
 -- Degree program constraints
 ALTER TABLE degree_program
-    ADD CONSTRAINT fk_degree_institution FOREIGN KEY (institution_id) REFERENCES academic_institutions(id);
+    ADD CONSTRAINT fk_degree_institution FOREIGN KEY (institution) REFERENCES academic_institutions(name)
+    ADD CONSTRAINT degree_major FOREIGN KEY (major) REFERENCES majors(name),
+    ADD CONSTRAINT degree_speciality FOREIGN KEY (speciality) REFERENCES specialities(name);
+
 
 -- Majors constraints
 ALTER TABLE majors
-    ADD CONSTRAINT fk_majors_degree FOREIGN KEY (degree_program_id) REFERENCES degree_program(id) ON DELETE CASCADE;
+   ADD CONSTRAINT fk_majors_department FOREIGN KEY (department) REFERENCES departments(name) ON DELETE CASCADE;
 
 -- Specialities constraints
 ALTER TABLE specialities
-    ADD CONSTRAINT fk_specialties_degree FOREIGN KEY (degree_program_id) REFERENCES degree_program(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_specialties_major FOREIGN KEY (major) REFERENCES majors(name) ON DELETE CASCADE;
 
 -- Signature objects constraints
 ALTER TABLE signature_objects
@@ -478,15 +486,16 @@ ALTER TABLE signatures
 
 -- Students constraints
 ALTER TABLE students
+    ADD CONSTRAINT fk_students_department FOREIGN KEY (department) REFERENCES departments(name),
     ADD CONSTRAINT fk_students_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     ADD CONSTRAINT fk_students_degree FOREIGN KEY (degree) REFERENCES degree_program(name),
-    ADD CONSTRAINT fk_students_major FOREIGN KEY (major) REFERENCES majors(name),
-    ADD CONSTRAINT fk_students_specialization FOREIGN KEY (specialization) REFERENCES specialities(name),
-    ADD CONSTRAINT unique_student_dept UNIQUE(student_id, department);
+    -- ADD CONSTRAINT fk_students_major FOREIGN KEY (major) REFERENCES majors(name),
+    -- ADD CONSTRAINT fk_students_specialization FOREIGN KEY (specialization) REFERENCES specialities(name),
+    -- ADD CONSTRAINT unique_student_dept UNIQUE(student_id, department);
 
 -- Teacher constraints
 ALTER TABLE teacher
-    ADD CONSTRAINT fk_department_name FOREIGN KEY (department) REFERENCES departments(name),
+    ADD CONSTRAINT fk_teacher_department FOREIGN KEY (department) REFERENCES departments(name),
     ADD CONSTRAINT fk_teacher_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     ADD CONSTRAINT fk_teacher_institution FOREIGN KEY (institution_id) REFERENCES academic_institutions(id);
 
@@ -614,6 +623,31 @@ ALTER TABLE diploma_delivery
     ADD CONSTRAINT fk_diploma_academic_work FOREIGN KEY (academic_work_id) REFERENCES academic_work(id),
     ADD CONSTRAINT fk_diploma_jury_evaluation FOREIGN KEY (jury_evaluation_id) REFERENCES jury_evaluations(id),
     ADD CONSTRAINT fk_diploma_delivered_by FOREIGN KEY (delivered_by) REFERENCES admins(user_id);
+
+-- Messages constraints
+ALTER TABLE messages
+    ADD CONSTRAINT fk_messages_conversation FOREIGN KEY (conversation_id) REFERENCES conversations(id),
+    ADD CONSTRAINT fk_messages_sender FOREIGN KEY (sender_id) REFERENCES users(id);
+
+-- Chatbot messages constraints
+ALTER TABLE chatbot_messages
+    ADD CONSTRAINT fk_chatbot_messages_conversation FOREIGN KEY (conversation_id) REFERENCES chatbot_conversations(id);
+
+ALTER TABLE chatbot_conversations
+    ADD CONSTRAINT fk_chatbot_conversations_user FOREIGN KEY (user_id) REFERENCES users(id);
+
+ALTER TABLE conversation_participants
+    ADD CONSTRAINT fk_conversation_participants_conversation FOREIGN KEY (conversation_id) REFERENCES conversations(id),
+    ADD CONSTRAINT fk_conversation_participants_user FOREIGN KEY (user_id) REFERENCES users(id);
+
+-- OTP verifications constraints
+ALTER TABLE otp_verifications
+    ADD CONSTRAINT fk_otp_user FOREIGN KEY (user_id) REFERENCES users(id),
+    ADD CONSTRAINT check_otp_code CHECK (otp_code ~ '^[0-9]{6}$'),
+    ADD CONSTRAINT check_otp_email CHECK (email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
+    ADD CONSTRAINT check_otp_expires_at CHECK (expires_at > NOW()),
+    ADD CONSTRAINT unique_otp_user_email UNIQUE(user_id, email, purpose);
+
 -- phase 3: Add indexes for performance optimization
 CREATE INDEX idx_users_email ON users(email); -- For user login and lookups
 CREATE INDEX idx_students_student_id ON students(student_id); -- For student-specific queries
