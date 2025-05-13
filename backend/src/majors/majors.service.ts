@@ -11,25 +11,26 @@ export class MajorsService {
   constructor(
     @InjectRepository(Major)
     private readonly majorsRepository: Repository<Major>,
+    @InjectRepository(Department)
+    private readonly departmentRepository: Repository<Department>
   ) {}
 
   async create(createMajorDto: CreateMajorDto): Promise<Major | null> {
-    // First, create a new Major instance with basic properties
-    const major = new Major();
+    // First, check if the department exists
+    const department = await this.departmentRepository.findOneBy({ 
+      id: createMajorDto.department 
+    });
     
-    // Copy over simple properties from DTO to entity
+    if (!department) {
+      throw new BadRequestException(`Department with ID ${createMajorDto.department} not found`);
+    }
+    
+    // Create a new Major instance
+    const major = new Major();
     major.name = createMajorDto.name;
     major.description = createMajorDto.description;
+    major.department = department; // Use the actual department entity
     
-    // If department ID is provided, set up the relationship
-    if (createMajorDto.department) {
-      // Create a reference Department object with just the ID
-      major.department = { id: createMajorDto.department } as Department;
-    }
-    // If the department ID is not provided, throw an error
-    if (!major.department) {
-      throw new BadRequestException('Department ID is required');
-    }
     // Save and return the new major
     return await this.majorsRepository.save(major);
   }

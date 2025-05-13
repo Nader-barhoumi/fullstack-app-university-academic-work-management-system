@@ -1,7 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { AcademicInstitution } from '../../academic-institution/entities/academic-institution.entity';
 import { DegreeProgramType } from '../../enums/DegreeProgramType.enum';
-
+import { Major } from '../../majors/entities/major.entity';
+import { Speciality } from 'src/specialities/entities/speciality.entity';
 @Entity('degree_program')
 export class DegreeProgram {
   @PrimaryGeneratedColumn()
@@ -16,8 +17,13 @@ export class DegreeProgram {
   @Column({ type: 'enum', enum: DegreeProgramType }) 
   level: DegreeProgramType;
 
-  // @ManyToOne(() => DegreeProgram, (degreeProgram) => degreeProgram.majors)
+  @ManyToOne(() => Major)
+  @JoinColumn({ name: 'major_id' })
+  major: Major;
 
+  @ManyToOne(() => Speciality)
+  @JoinColumn({ name: 'speciality_id' })
+  speciality: Speciality;
 
   @Column()
   duration_years: number;

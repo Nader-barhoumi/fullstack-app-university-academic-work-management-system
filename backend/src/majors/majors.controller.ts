@@ -3,6 +3,9 @@ import { MajorsService } from './majors.service';
 import { CreateMajorDto } from './dto/create-major.dto';
 import { UpdateMajorDto } from './dto/update-major.dto';
 import { Major } from './entities/major.entity';
+import { plainToClass } from 'class-transformer';
+import { MajorResponseDto } from './dto/major-response.dto';
+
 @Controller('majors')
 export class MajorsController {
   constructor(private readonly majorsService: MajorsService) {}
@@ -16,21 +19,27 @@ export class MajorsController {
       throw new BadRequestException('Name is required');
     }
 
-    return this.majorsService.create(createMajorDto);
+    return await this.majorsService.create(createMajorDto);
   }
 
   @Get()
-  async findAll(): Promise<Major[]> {
-    return await this.majorsService.findAll();
+  async findAll(): Promise<MajorResponseDto[]> {
+    const majors = await this.majorsService.findAll();
+    // Transform to DTO array to avoid circular references
+    return majors.map(major =>
+      plainToClass(MajorResponseDto, major, {
+        excludeExtraneousValues: true
+      })
+    );
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Major | null> {
-    const Major = await this.majorsService.findOne(+id);
-    if (!Major) {
-      throw new BadRequestException(' Major  not found');
-    }
-    return Major;
+  async findOne(@Param('id') id: string): Promise<MajorResponseDto | null> {
+    const major = await this.majorsService.findOne(+id);
+    // Transform to DTO to avoid circular references
+    return plainToClass(MajorResponseDto, major, { 
+      excludeExtraneousValues: true 
+    });
   }
 
   @Patch(':id')
@@ -52,5 +61,6 @@ export class MajorsController {
     if (!result) {
       throw new BadRequestException(`Major with ID ${id} not found`);
     }
+    await this.majorsService.remove(+id);
   }
 }

@@ -5,10 +5,10 @@ export class Speciality {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   name: string;
 
-  @Column()
+  @Column({ unique: true })
   code: string;
 
   @ManyToOne(() => Major, (major) => major.specialities)
