@@ -17,11 +17,11 @@ export class DegreeProgram {
   @Column({ type: 'enum', enum: DegreeProgramType }) 
   level: DegreeProgramType;
 
-  @ManyToOne(() => Major)
+  @ManyToOne(() => Major, (major) => major.degreePrograms)
   @JoinColumn({ name: 'major_id' })
   major: Major;
 
-  @ManyToOne(() => Speciality)
+  @ManyToOne(() => Speciality, (speciality) => speciality.degreePrograms)
   @JoinColumn({ name: 'speciality_id' })
   speciality: Speciality;
 
@@ -32,7 +32,7 @@ export class DegreeProgram {
   description: string;
 
   @ManyToOne(() => AcademicInstitution, (academicInstitution) => academicInstitution.degreePrograms)
-  @JoinColumn({ referencedColumnName: 'name' })
+  @JoinColumn({ referencedColumnName: 'id' , name: 'institution_id' })
   institution: AcademicInstitution;
 
 }

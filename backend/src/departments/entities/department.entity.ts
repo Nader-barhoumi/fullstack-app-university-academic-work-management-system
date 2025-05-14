@@ -13,7 +13,7 @@ export class Department {
   @Column({ type: 'varchar', length: 10, unique: true })
   code: string;
 
-  @ManyToOne(() => AcademicInstitution)
+  @ManyToOne(() => AcademicInstitution,{nullable: true})
   academicInstitution: AcademicInstitution;
 
   @OneToMany(() => Major, (major) => major.department)

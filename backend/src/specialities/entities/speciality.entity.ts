@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Major } from '../../majors/entities/major.entity';
+import { DegreeProgram } from '../../degree-programs/entities/degree-program.entity';
 @Entity()
 export class Speciality {
   @PrimaryGeneratedColumn()
@@ -15,6 +16,11 @@ export class Speciality {
   @JoinColumn({ name: 'major' })
   major: Major;
 
+  @OneToMany(() => DegreeProgram, (degreeProgram) => degreeProgram.speciality)
+  degreePrograms: DegreeProgram[];
+
   @Column()
   description: string;
+
+
 }

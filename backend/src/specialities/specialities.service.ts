@@ -10,15 +10,16 @@ import { BadRequestException } from '@nestjs/common/exceptions';
 export class SpecialitiesService {
   constructor(
     @InjectRepository(Speciality)
-    private specialityRepository: Repository<Speciality>,
+    private readonly specialityRepository: Repository<Speciality>,
     @InjectRepository(Major)
-    private majorRepository: Repository<Major>,
+    private readonly majorRepository: Repository<Major>,
   ) {}
 
   async create(createSpecialityDto: CreateSpecialityDto): Promise<Speciality> {
     // Check if the major exists
-    const major = await this.majorRepository.findOneBy({ 
-      id: createSpecialityDto.major });
+    const major = await this.majorRepository.findOneBy({
+      id: createSpecialityDto.major
+    });
     if (!major) {
       throw new BadRequestException(`Major with ID ${createSpecialityDto.major} not found`);
     }
