@@ -5,11 +5,11 @@ import { DegreeProgramType } from "src/enums/DegreeProgramType.enum";
 export class UpdateDegreeProgramDto {
     @IsString()
     @Length(1, 50)
-    degreeName: string;
+    name: string;
 
     @IsString()
     @Length(1, 10)
-    degreeCode: string;
+    code: string;
 
     @IsString()
     @Length(1, 255)
@@ -18,9 +18,9 @@ export class UpdateDegreeProgramDto {
     @IsEnum(DegreeProgramType)
     level: DegreeProgramType;
 
-    // @IsInt()
-    // @IsPositive()
-    // degreeDuration: number;
+    @IsInt()
+    @IsPositive()
+    duration: number;
 
     // @IsNumber()
     // major_id: number;

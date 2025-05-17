@@ -1,3 +1,4 @@
+import { Address } from './Address.interface';
 export interface AcademicInstitution {
   id: number;
   name: string;
@@ -5,14 +6,15 @@ export interface AcademicInstitution {
   phone: number;
   fax?: number;
   address_id: number;
-  address: {
-    id: number;
-    address_details: string;
-    zip_code: number;
-    city?: string;
-    state: string;
-    additional_details?: string;
-  };
+  address?: Address;
+  // {
+  //   id: number;
+  //   address_details: string;
+  //   zip_code: number;
+  //   city?: string;
+  //   state: string;
+  //   additional_details?: string;
+  // };
   email: string;
   director: string;
   logo_url?: string;

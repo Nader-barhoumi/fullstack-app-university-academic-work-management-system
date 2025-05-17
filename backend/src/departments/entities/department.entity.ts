@@ -1,7 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, ManyToOne } from 'typeorm';
 import { Major } from '../../majors/entities/major.entity';
 import { AcademicInstitution } from '../../academic-institution/entities/academic-institution.entity';
-import { join } from 'path';
 @Entity('department')
 export class Department {
   @PrimaryGeneratedColumn()

@@ -10,6 +10,9 @@ export class CreateDegreeProgramDto {
   @Length(1, 10)
   code: string;
 
+  @IsEnum(DegreeProgramType)
+  degree_type: DegreeProgramType;
+
   @IsString()
   @Length(1, 255)
   description: string;

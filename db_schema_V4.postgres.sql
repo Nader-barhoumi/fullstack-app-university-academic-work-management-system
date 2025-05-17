@@ -36,7 +36,7 @@ CREATE TYPE degree_program_type AS ENUM ('Bachelor','Master','PhD');
 CREATE TABLE address (
     id SERIAL PRIMARY KEY,
     address_details VARCHAR(255) NOT NULL,
-    zip_code INTEGER NOT NULL,
+    zip_code INT NOT NULL,
     city VARCHAR(20) NOT NULL,
     state States NOT NULL,
     additional_details VARCHAR(255)
@@ -82,7 +82,7 @@ CREATE TABLE companies (
 
 CREATE TABLE academic_institutions (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL UNIQUE,
     university VARCHAR(100) NOT NULL,
     phone INT NOT NULL,
     fax INT,
@@ -156,13 +156,13 @@ CREATE TABLE students (
     level lvl_type NOT NULL
 );
 
-CREATE TABLE teacher (
+CREATE TABLE teachers (
     user_id INT PRIMARY KEY,
     title VARCHAR(50),
     position position_type,
     department VARCHAR(50) NULL,
     office_location VARCHAR(50),
-    institution_id VARCHAR(20)
+    institution_id INT
 );
 
 CREATE TABLE industrial_tutors (
@@ -218,21 +218,11 @@ CREATE TABLE internships (
     academic_work_id INT,
     company_id INT NOT NULL,
     industrial_tutor_id INT NOT NULL,
-    academic_tutor_id INT,
     internship_type category_type NOT NULL DEFAULT 'required',
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    academic_tutor_signature INT,
-    industrial_tutor_signature INT NOT NULL,
     company_signature INT NOT NULL,
-    status progress_status NOT NULL DEFAULT 'on_going',
-    specifications_id INT
-);
-
-CREATE TABLE specification_signatures (
-    specification_id INT NOT NULL,
-    signature_id INT NOT NULL,
-    PRIMARY KEY (specification_id, signature_id)
+    status progress_status NOT NULL DEFAULT 'on_going'
 );
 
 CREATE TABLE prototypes (
@@ -291,6 +281,11 @@ CREATE TABLE final_projects (
     academic_work_id INT NOT NULL,
     internship_id INT,
     type project_type NOT NULL,
+    academic_tutor_id INT NOT NULL,
+    industrial_tutor_id INT,
+    company_id INT,
+    academic_tutor_signature INT,
+    industrial_tutor_signature INT NULL,
     keywords TEXT[],
     required_skills TEXT[],
     decision decision_status NOT NULL DEFAULT 'Pending',
@@ -437,28 +432,28 @@ CREATE TABLE otp_verifications (
 -- Users table constraints
 ALTER TABLE users
     ADD CONSTRAINT fk_users_address FOREIGN KEY (address_id) REFERENCES address(id),
-    ADD CONSTRAINT check_cin CHECK (cin ~ '^[0-9]{8}$'),
-    ADD CONSTRAINT check_email CHECK (email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
-    ADD CONSTRAINT check_phone CHECK (phone ~ '^[0-9]{10,15}$'),
+    --ADD CONSTRAINT check_cin CHECK (cin ~ '^[0-9]{8}$'),
+    --ADD CONSTRAINT check_email CHECK (email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
+    --ADD CONSTRAINT check_phone CHECK (phone ~ '^[0-9]{10,15}$'),
     ADD CONSTRAINT unique_cin UNIQUE(cin),
     ADD CONSTRAINT unique_email UNIQUE(email);
 
 -- Companies table constraints
 ALTER TABLE companies
-    ADD CONSTRAINT fk_companies_address FOREIGN KEY (address_id) REFERENCES address(id),
-    ADD CONSTRAINT check_company_email CHECK (email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
-    ADD CONSTRAINT check_company_phone CHECK (phone ~ '^[0-9]{8,13}$');
+    ADD CONSTRAINT fk_companies_address FOREIGN KEY (address_id) REFERENCES address(id);
+    --ADD CONSTRAINT check_company_email CHECK (email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
+    --ADD CONSTRAINT check_company_phone CHECK (phone ~ '^[0-9]{8,13}$');
 
 -- Academic institutions constraints
 ALTER TABLE academic_institutions
-    ADD CONSTRAINT fk_institution_address FOREIGN KEY (address_id) REFERENCES address(id),
-    ADD CONSTRAINT check_institution_phone CHECK (phone ~ '^[0-9]{10,15}$'),
-    ADD CONSTRAINT check_institution_email CHECK (email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$');
+    ADD CONSTRAINT fk_institution_address FOREIGN KEY (address_id) REFERENCES address(id);
+    --ADD CONSTRAINT check_institution_phone CHECK (phone ~ '^[0-9]{10,15}$'),
+    --ADD CONSTRAINT check_institution_email CHECK (email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$');
 
 -- Degree program constraints
 ALTER TABLE degree_program
-    ADD CONSTRAINT fk_degree_institution FOREIGN KEY (institution) REFERENCES academic_institutions(name)
-    ADD CONSTRAINT degree_major FOREIGN KEY (major) REFERENCES majors(name),
+    ADD CONSTRAINT fk_degree_institution FOREIGN KEY (institution) REFERENCES academic_institutions(name),
+    ADD CONSTRAINT degree_major FOREIGN KEY (major) REFERENCES specialities(major),
     ADD CONSTRAINT degree_speciality FOREIGN KEY (speciality) REFERENCES specialities(name);
 
 
@@ -473,28 +468,28 @@ ALTER TABLE specialities
 -- Signature objects constraints
 ALTER TABLE signature_objects
     ADD CONSTRAINT fk_signature_objects_user FOREIGN KEY (user_id) REFERENCES users(id),
-    ADD CONSTRAINT fk_signature_objects_verifier FOREIGN KEY (verified_by) REFERENCES users(id),
-    ADD CONSTRAINT check_external_email CHECK (external_email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
-    ADD CONSTRAINT check_signature_type CHECK (signature_type IN ('manual', 'digital', 'biometric'));
+    ADD CONSTRAINT fk_signature_objects_verifier FOREIGN KEY (verified_by) REFERENCES users(id);
+    --ADD CONSTRAINT check_external_email CHECK (external_email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
+    --ADD CONSTRAINT check_signature_type CHECK (signature_type IN ('manual', 'digital', 'biometric'));
 
 -- Signatures constraints
 ALTER TABLE signatures
     ADD CONSTRAINT fk_signatures_object FOREIGN KEY (signature_object_id) REFERENCES signature_objects(id),
     ADD CONSTRAINT fk_signatures_signer FOREIGN KEY (signer_user_id) REFERENCES users(id),
-    ADD CONSTRAINT fk_signatures_validator FOREIGN KEY (validated_by) REFERENCES users(id),
-    ADD CONSTRAINT check_signer_email CHECK (signer_email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$');
+    ADD CONSTRAINT fk_signatures_validator FOREIGN KEY (validated_by) REFERENCES users(id);
+    --ADD CONSTRAINT check_signer_email CHECK (signer_email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$');
 
 -- Students constraints
 ALTER TABLE students
-    ADD CONSTRAINT fk_students_department FOREIGN KEY (department) REFERENCES departments(name),
+    --ADD CONSTRAINT fk_students_department FOREIGN KEY (department) REFERENCES departments(name),
     ADD CONSTRAINT fk_students_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    ADD CONSTRAINT fk_students_degree FOREIGN KEY (degree) REFERENCES degree_program(name),
+    ADD CONSTRAINT fk_students_degree FOREIGN KEY (degree) REFERENCES degree_program(name);
     -- ADD CONSTRAINT fk_students_major FOREIGN KEY (major) REFERENCES majors(name),
     -- ADD CONSTRAINT fk_students_specialization FOREIGN KEY (specialization) REFERENCES specialities(name),
     -- ADD CONSTRAINT unique_student_dept UNIQUE(student_id, department);
 
--- Teacher constraints
-ALTER TABLE teacher
+-- Teachers constraints
+ALTER TABLE teachers
     ADD CONSTRAINT fk_teacher_department FOREIGN KEY (department) REFERENCES departments(name),
     ADD CONSTRAINT fk_teacher_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     ADD CONSTRAINT fk_teacher_institution FOREIGN KEY (institution_id) REFERENCES academic_institutions(id);
@@ -510,24 +505,24 @@ ALTER TABLE admins
 
 -- Academic work constraints
 ALTER TABLE academic_work
-    ADD CONSTRAINT fk_academic_work_student FOREIGN KEY (student_id) REFERENCES students(user_id),
-    ADD CONSTRAINT check_max_collaborators CHECK (max_collaborators BETWEEN 1 AND 2),
-    ADD CONSTRAINT check_dates CHECK (start_date < end_date OR (start_date IS NULL AND end_date IS NULL)),
-    ADD CONSTRAINT unique_student_work_type UNIQUE(student_id, work_type);
+    ADD CONSTRAINT fk_academic_work_student FOREIGN KEY (student_id) REFERENCES students(user_id);
+    --ADD CONSTRAINT check_max_collaborators CHECK (max_collaborators BETWEEN 1 AND 2),
+    --ADD CONSTRAINT check_dates CHECK (start_date < end_date OR (start_date IS NULL AND end_date IS NULL)),
+    --ADD CONSTRAINT unique_student_work_type UNIQUE(student_id, type);
 
 -- Responsibilities constraints
 ALTER TABLE responsibilities
     ADD CONSTRAINT fk_responsibilities_user FOREIGN KEY (user_id) REFERENCES users(id),
     ADD CONSTRAINT fk_responsibilities_academic_work FOREIGN KEY (academic_work_id) REFERENCES academic_work(id),
     ADD CONSTRAINT fk_responsibilities_assigner FOREIGN KEY (assigned_by) REFERENCES users(id),
-    ADD CONSTRAINT check_role CHECK (role IN ('academic_tutor', 'jury_member')),
+    --ADD CONSTRAINT check_role CHECK (role IN ('academic_tutor', 'jury_member')),
     ADD CONSTRAINT unique_user_work_role UNIQUE (user_id, academic_work_id, role);
 
 -- Specifications constraints
 ALTER TABLE specifications
     ADD CONSTRAINT fk_specifications_academic_signature FOREIGN KEY (academic_tutor_signature) REFERENCES signatures(id),
     ADD CONSTRAINT fk_specifications_industrial_signature FOREIGN KEY (industrial_tutor_signature) REFERENCES signatures(id),
-    ADD CONSTRAINT check_objectives_length CHECK (LENGTH(objectives) > 10),
+    --ADD CONSTRAINT check_objectives_length CHECK (LENGTH(objectives) > 10),
     ADD CONSTRAINT check_main_tasks_length CHECK (LENGTH(main_tasks) > 10);
 
 -- Internships constraints
@@ -536,44 +531,44 @@ ALTER TABLE internships
     ADD CONSTRAINT fk_internships_academic_work FOREIGN KEY (academic_work_id) REFERENCES academic_work(id),
     ADD CONSTRAINT fk_internships_company FOREIGN KEY (company_id) REFERENCES companies(id),
     ADD CONSTRAINT fk_internships_industrial_tutor FOREIGN KEY (industrial_tutor_id) REFERENCES industrial_tutors(user_id),
-    ADD CONSTRAINT fk_internships_academic_tutor FOREIGN KEY (academic_tutor_id) REFERENCES teacher(user_id),
-    ADD CONSTRAINT fk_internships_academic_signature FOREIGN KEY (academic_tutor_signature) REFERENCES signatures(id),
+    -- ADD CONSTRAINT fk_internships_academic_tutor FOREIGN KEY (academic_tutor_id) REFERENCES teachers(user_id),
+    -- ADD CONSTRAINT fk_internships_academic_signature FOREIGN KEY (academic_tutor_signature) REFERENCES signatures(id),
     ADD CONSTRAINT fk_internships_industrial_signature FOREIGN KEY (industrial_tutor_signature) REFERENCES signatures(id),
     ADD CONSTRAINT fk_internships_company_signature FOREIGN KEY (company_signature) REFERENCES signatures(id),
-    ADD CONSTRAINT fk_internships_specifications FOREIGN KEY (specifications_id) REFERENCES specifications(id),
-    ADD CONSTRAINT check_internship_dates CHECK (end_date > start_date),
-    ADD CONSTRAINT check_required_academic_tutor CHECK (
-        internship_type = 'optional' OR 
-        (academic_tutor_id IS NOT NULL AND academic_tutor_signature IS NOT NULL)
-    );-- Ensure academic tutor is required for required internships
+    ADD CONSTRAINT fk_internships_specifications FOREIGN KEY (specifications_id) REFERENCES specifications(id);
+    --ADD CONSTRAINT check_internship_dates CHECK (end_date > start_date),
+    --ADD CONSTRAINT check_required_academic_tutor CHECK (
+        --internship_type = 'optional' OR 
+        --(academic_tutor_id IS NOT NULL AND academic_tutor_signature IS NOT NULL)
+    --);-- Ensure academic tutor is required for required internships
 
 -- Specification signatures constraints
-ALTER TABLE specification_signatures
-    ADD CONSTRAINT fk_spec_sig_specification FOREIGN KEY (specification_id) REFERENCES specifications(id),
-    ADD CONSTRAINT fk_spec_sig_signature FOREIGN KEY (signature_id) REFERENCES signatures(id);
+-- ALTER TABLE specification_signatures
+--     ADD CONSTRAINT fk_spec_sig_specification FOREIGN KEY (specification_id) REFERENCES specifications(id),
+--     ADD CONSTRAINT fk_spec_sig_signature FOREIGN KEY (signature_id) REFERENCES signatures(id);
 
 -- Prototypes constraints
 ALTER TABLE prototypes
     ADD CONSTRAINT fk_prototypes_academic_work FOREIGN KEY (academic_work_id) REFERENCES academic_work(id);
 
 -- Rooms constraints
-ALTER TABLE rooms
-    ADD CONSTRAINT check_room_capacity CHECK (capacity > 0);
+--ALTER TABLE rooms
+    --ADD CONSTRAINT check_room_capacity CHECK (capacity > 0);
 
 -- Room reservations constraints
 ALTER TABLE room_reservations
     ADD CONSTRAINT fk_reservations_room FOREIGN KEY (room_id) REFERENCES rooms(id),
-    ADD CONSTRAINT fk_reservations_user FOREIGN KEY (user_id) REFERENCES users(id),
-    ADD CONSTRAINT check_reservation_date CHECK (reservation_date >= CURRENT_DATE),
-    ADD CONSTRAINT check_reservation_time CHECK (end_time > start_time);
+    ADD CONSTRAINT fk_reservations_user FOREIGN KEY (user_id) REFERENCES users(id);
+    --ADD CONSTRAINT check_reservation_date CHECK (reservation_date >= CURRENT_DATE),
+    --ADD CONSTRAINT check_reservation_time CHECK (end_time > start_time);
 
 -- Break circular dependency by deferring one constraint
 ALTER TABLE jury_evaluations
     ADD CONSTRAINT fk_jury_defense FOREIGN KEY (defense_id) REFERENCES defenses(id) DEFERRABLE INITIALLY DEFERRED,
-    ADD CONSTRAINT fk_jury_supervisor FOREIGN KEY (supervisor_id) REFERENCES teacher(user_id),
-    ADD CONSTRAINT fk_jury_president FOREIGN KEY (president_id) REFERENCES teacher(user_id),
-    ADD CONSTRAINT fk_jury_reporter FOREIGN KEY (reporter_id) REFERENCES teacher(user_id),
-    ADD CONSTRAINT check_jury_score CHECK (score BETWEEN 0 AND 20),
+    ADD CONSTRAINT fk_jury_supervisor FOREIGN KEY (supervisor_id) REFERENCES teachers(user_id),
+    ADD CONSTRAINT fk_jury_president FOREIGN KEY (president_id) REFERENCES teachers(user_id),
+    ADD CONSTRAINT fk_jury_reporter FOREIGN KEY (reporter_id) REFERENCES teachers(user_id),
+    --ADD CONSTRAINT check_jury_score CHECK (score BETWEEN 0 AND 20),
     ADD CONSTRAINT unique_defense_jury UNIQUE(defense_id);
 
 -- Defenses constraints
@@ -584,12 +579,17 @@ ALTER TABLE defenses
 -- Final projects constraints
 ALTER TABLE final_projects
     ADD CONSTRAINT fk_final_projects_academic_work FOREIGN KEY (academic_work_id) REFERENCES academic_work(id),
+    ADD CONSTRAINT fk_final_projects_academic_tutor FOREIGN KEY (academic_tutor_id) REFERENCES teachers(user_id),
+    ADD CONSTRAINT fk_final_projects_industrial_tutor FOREIGN KEY (industrial_tutor_id) REFERENCES industrial_tutors(user_id),
+    ADD CONSTRAINT fk_final_projects_company FOREIGN KEY (company_id) REFERENCES companies(id),
+    ADD CONSTRAINT fk_final_projects_academic_signature FOREIGN KEY (academic_tutor_signature) REFERENCES signatures(id),
+    ADD CONSTRAINT fk_final_projects_industrial_signature FOREIGN KEY (industrial_tutor_signature) REFERENCES signatures(id),
     ADD CONSTRAINT fk_final_projects_internship FOREIGN KEY (internship_id) REFERENCES internships(id);
 
 -- Research memoirs constraints
 ALTER TABLE research_memoirs
     ADD CONSTRAINT fk_research_memoirs_academic_work FOREIGN KEY (academic_work_id) REFERENCES academic_work(id),
-    ADD CONSTRAINT fk_research_memoirs_tutor FOREIGN KEY (academic_tutor_id) REFERENCES teacher(user_id),
+    ADD CONSTRAINT fk_research_memoirs_tutor FOREIGN KEY (academic_tutor_id) REFERENCES teachers(user_id),
     ADD CONSTRAINT fk_research_memoirs_signature FOREIGN KEY (tutor_signature_id) REFERENCES signatures(id);
 
 -- Documents constraints
@@ -599,14 +599,14 @@ ALTER TABLE documents
 -- Invitations constraints
 ALTER TABLE invitations
     ADD CONSTRAINT fk_invitations_sender FOREIGN KEY (sender_id) REFERENCES admins(user_id),
-    ADD CONSTRAINT fk_invitations_signature FOREIGN KEY (signature_id) REFERENCES signatures(id),
-    ADD CONSTRAINT check_receiver_email CHECK (receiver_email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
-    ADD CONSTRAINT check_invitation_phone CHECK (phone ~ '^[0-9]{8,13}$');
+    ADD CONSTRAINT fk_invitations_signature FOREIGN KEY (signature_id) REFERENCES signatures(id);
+    --ADD CONSTRAINT check_receiver_email CHECK (receiver_email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
+    --ADD CONSTRAINT check_invitation_phone CHECK (phone ~ '^[0-9]{8,13}$');
 
 -- Audits constraints
 ALTER TABLE audits
-    ADD CONSTRAINT fk_audits_user FOREIGN KEY (performed_by) REFERENCES users(id),
-    ADD CONSTRAINT check_action_type CHECK (action_type IN ('create', 'update', 'delete'));
+    ADD CONSTRAINT fk_audits_user FOREIGN KEY (performed_by) REFERENCES users(id);
+    --ADD CONSTRAINT check_action_type CHECK (action_type IN ('create', 'update', 'delete'));
 
 -- Tutor change requests constraints
 ALTER TABLE tutor_change_requests
@@ -643,9 +643,9 @@ ALTER TABLE conversation_participants
 -- OTP verifications constraints
 ALTER TABLE otp_verifications
     ADD CONSTRAINT fk_otp_user FOREIGN KEY (user_id) REFERENCES users(id),
-    ADD CONSTRAINT check_otp_code CHECK (otp_code ~ '^[0-9]{6}$'),
-    ADD CONSTRAINT check_otp_email CHECK (email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
-    ADD CONSTRAINT check_otp_expires_at CHECK (expires_at > NOW()),
+   -- ADD CONSTRAINT check_otp_code CHECK (otp_code ~ '^[0-9]{6}$'),
+   -- ADD CONSTRAINT check_otp_email CHECK (email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
+   -- ADD CONSTRAINT check_otp_expires_at CHECK (expires_at > NOW()),
     ADD CONSTRAINT unique_otp_user_email UNIQUE(user_id, email, purpose);
 
 -- phase 3: Add indexes for performance optimization

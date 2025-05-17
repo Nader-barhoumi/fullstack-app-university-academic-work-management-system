@@ -49,7 +49,7 @@ export class AcademicInstitutionComponent implements OnInit {
           data.address = {
             id: 0,
             address_details: '',
-            zip_code: 0,
+            zip_code: 1200,
             state: States.KASSERINE,
           };
         }

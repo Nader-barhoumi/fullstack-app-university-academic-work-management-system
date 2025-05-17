@@ -8,6 +8,8 @@ import { DegreeProgramModule } from './degree-programs/degree-programs.module';
 import { MajorsModule } from './majors/majors.module';
 import { SpecialitiesModule } from './specialities/specialities.module';
 import { DepartmentsModule } from './departments/departments.module';
+import { UsersModule } from './users/users.module';
+import { StudentsModule } from './students/students.module';
 
 
 config();
@@ -44,6 +46,10 @@ config();
     SpecialitiesModule,
     
     DepartmentsModule,
+    
+    UsersModule,
+    
+    StudentsModule,
    
   ],
 
