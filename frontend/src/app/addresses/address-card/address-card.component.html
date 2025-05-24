@@ -1,6 +1,0 @@
-<div *ngIf="!address" class="no-address">No address available</div>
-<div *ngIf="address" class="address-card">
-  <p class="address-text">{{ address.address_details || 'No address details available' }}</p>
-  <p class="address-text">{{ address.city || '' }} {{ address.state || '' }} {{ address.zip_code || '' }}</p>
-  <p *ngIf="address.additional_details" class="address-text">{{ address.additional_details }}</p>
-</div>
