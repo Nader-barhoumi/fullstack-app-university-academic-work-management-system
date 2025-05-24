@@ -7,8 +7,8 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'uuid', unique: true, default: 'uuid_generate_v4()' })
-  external_id: string;
+  // @Column({ type: 'uuid', unique: true, default: 'uuid_generate_v4()' })
+  // external_id: string;
 
   @Column({ default: 'assets/images/default-avatar.png' })
   profile_picture: string;
@@ -28,7 +28,10 @@ export class User {
   @Column({ length: 20 })
   phone: string;
 
-  @Column({ default: 'crypt(\'default\', gen_salt(\'bf\'))' })
+  @Column({
+    default: () => "crypt('default', gen_salt('bf'))",
+    type: 'text'
+  })
   password_hash: string;
 
   @Column({ type: 'enum', enum: RoleType })

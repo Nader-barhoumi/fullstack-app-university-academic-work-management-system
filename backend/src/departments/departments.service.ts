@@ -12,6 +12,10 @@ export class DepartmentsService {
   ) {}
 
  async create(createDepartmentDto: CreateDepartmentDto): Promise<Department | null> {
+    const existingName = await this.departmentsRepository.findOneBy({ name: createDepartmentDto.name  });
+    if (existingName) {
+      throw new Error(`Department with name ${createDepartmentDto.name} already exists`);
+    }
     const department = this.departmentsRepository.create(createDepartmentDto);
     return this.departmentsRepository.save(department);
   }

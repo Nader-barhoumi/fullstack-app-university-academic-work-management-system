@@ -65,7 +65,11 @@ export class UsersService {
     
     if (createUserDto.address_id) {
       const address = await this.addressRepository.findOneBy({ id: createUserDto.address_id });
-      user.address = address;
+        if (address) {
+          user.address = address;
+        } else {
+          throw new NotFoundException(`Address with ID ${createUserDto.address_id} not found`);
+        }
     }
     
     if (createUserDto.is_active !== undefined) {
@@ -224,8 +228,8 @@ export class UsersService {
     // Update user with new password and clear token
     await this.repository.update(user.id, {
       password_hash: passwordHash,
-      reset_token: null,
-      reset_token_expiry: null
+      reset_token: undefined,
+      reset_token_expiry: undefined
     });
     
     return true;

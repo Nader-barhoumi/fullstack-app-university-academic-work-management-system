@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateMajorDto } from './dto/create-major.dto';
@@ -22,9 +22,14 @@ export class MajorsService {
     });
     
     if (!department) {
-      throw new BadRequestException(`Department with ID ${createMajorDto.department} not found`);
+      throw new NotFoundException(`Department with ID ${createMajorDto.department} not found`);
     }
-    
+    const existingMajor = await this.majorsRepository.findOneBy({
+      name: createMajorDto.name,
+    });
+    if (existingMajor) {
+      throw new ConflictException(`Major with name ${createMajorDto.name} already exists`);
+    }
     // Create a new Major instance
     const major = new Major();
     major.name = createMajorDto.name;
@@ -61,7 +66,7 @@ export class MajorsService {
     }
     const major = await this.majorsRepository.findOne({ where: { id } });
     if (!major) {
-      throw new BadRequestException('Major not found');
+      throw new NotFoundException('Major not found');
     }
     // Update the major properties with the DTO values
     Object.assign(major, updateMajorDto);
