@@ -1,7 +1,7 @@
 import { IsString, IsEmail, IsEnum, Length, IsOptional, IsBoolean } from 'class-validator';
 import { RoleType } from '../../enums/RoleType.enum';
 
-export class UpdateUserDto {
+export class UserResponseDto {
   @IsOptional()
   @IsString()
   @Length(1, 50)

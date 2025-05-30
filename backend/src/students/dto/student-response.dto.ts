@@ -7,13 +7,6 @@ export class CreateStudentDto {
   @IsPositive()
   user_id: number;
 
-  @IsEnum(SexType)
-  sex: SexType;
-
-  @IsString()
-  @Length(1, 10)
-  student_id: string;
-
   @IsNumber()
   degree: number;
 
